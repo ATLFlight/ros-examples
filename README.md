@@ -175,7 +175,7 @@ echo "export MV_SDK=/opt/qualcomm/mv/lib/mv" >> /home/linaro/.bashrc
 
 #### Machine Vision SDK License Installation
 
-The Machine Vision SDK will need a license file to run.  Obtain the license file from [here](https://developer.qualcomm.com/sdflight-key-req)
+The Machine Vision SDK will need a license file to run.  Obtain a research and development license file from [here](https://developer.qualcomm.com/sdflight-key-req)
 
 The license file needs to be placed at the same location as the MV SDK library **libmv.so**.
 
@@ -240,7 +240,7 @@ This example assumes that the user is familiar with ROS framework.  If you are n
 
 This assumes that the ROS build command is successful.
 
-**NOTE**: This process is for running VISLAM in standalone mode only.  Integration with a flight stack such as PX34 is not verified.
+**NOTE**: This process is for running VISLAM in standalone mode only.  Integration with a flight stack such as PX4 is not verified.
 
 **NOTE**: The steps below show each application to be run in a separate adb shell.  This is for illustration purpose only.  The applications, like **rocore**, **imu_app**, **snap_vislam_node** can be run in the background to meet your development/runtime workflow.  
 
@@ -257,7 +257,7 @@ roscore
 
 Starting the **imu_app** is **MANDATORY**.  Without this, the sample code will not run and the behavior is unpredictable.  **imu_app** is already pre-installed on the target.
 
-For VISLAM to work, it needs the IMU data.  On Snapdragon Flight<sup>TM</sup>, the MPU9x50(IMU) is connected to the ADSP and the Snapdragon Flight<sub>TM</sub> supports an Apps processor API to get the IMU Data from ADSP.  Start the imu_app before using the API to retrieve IMU data.
+For VISLAM to work, it needs the IMU data.  On Snapdragon Flight<sub>TM</sub>, the MPU9x50(IMU) is connected to the ADSP and the Snapdragon Flight<sub>TM</sub> supports an Apps processor API to get the IMU Data from ADSP.  Start the imu_app before using the API to retrieve IMU data.
 
 **NOTE**: Staring the **imu_app** will initialize the MPU9x50 driver on ADSP.  There can be only one app that initilizes the MPU9x50 driver on ADSP.  If there are more than one app that intializes the MPU9x50 driver, the attempts after the first one, will fail.  
   
