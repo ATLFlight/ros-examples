@@ -117,7 +117,8 @@ int32_t Snapdragon::VislamManager::Initialize
       vislam_params_.stdAccelMeasNoise, vislam_params_.stdGyroMeasNoise,
       vislam_params_.stdCamNoise, vislam_params_.minStdPixelNoise, vislam_params_.failHighPixelNoisePoints,
       vislam_params_.logDepthBootstrap, vislam_params_.useLogCameraHeight, vislam_params_.logCameraHeightBootstrap,
-      vislam_params_.noInitWhenMoving 
+      vislam_params_.noInitWhenMoving,
+      vislam_params_.limitedIMUbWtrigger
     );
     if( vislam_ptr_ == nullptr ) {
       rc = -1;
@@ -265,7 +266,7 @@ int32_t Snapdragon::VislamManager::GetPose( mvVISLAMPose& pose, int64_t& pose_fr
     float modified_timestamp = frame_ts_ns - static_cast<int64_t>(correction);
     {
       std::lock_guard<std::mutex> lock( sync_mutex_ );
-      mvVISLAM_AddImage(vislam_ptr_, modified_timestamp, image_buffer_, false);
+      mvVISLAM_AddImage(vislam_ptr_, modified_timestamp, image_buffer_ );
       pose = mvVISLAM_GetPose(vislam_ptr_);
       pose_frame_id = frame_id;
       timestamp_ns = static_cast<uint64_t>(modified_timestamp);

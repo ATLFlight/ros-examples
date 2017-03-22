@@ -82,7 +82,7 @@ Refer to the following [page](https://github.com/ATLFlight/ATLFlightDocs/blob/ma
 
 * Download the Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
 * The package name will be mv\<version\>.deb.  
-** Example: *mv0.8.deb*
+** Example: *mv0.9.deb*
 * push the deb package to the target and install it.
 
 ```
@@ -90,7 +90,6 @@ adb push mv<version>.deb /home/linaro
 adb shell sync
 adb shell
 dpkg -i /home/linaro/mv<version>.deb
-echo "export MV_SDK=/opt/qualcomm/mv/lib/mv" >> /home/linaro/.bashrc
 ```
 
 #### Machine Vision SDK License Installation
@@ -102,7 +101,7 @@ The license file needs to be placed at the same location as the MV SDK library *
 Push the license file to the target using the following command:
 
 ```
-adb push snapdragon-flight-license.bin /opt/qualcomm/mv/lib/mv/bin/lin/8x74/
+adb push snapdragon-flight-license.bin /usr/lib/
 adb shell sync
 ```
 

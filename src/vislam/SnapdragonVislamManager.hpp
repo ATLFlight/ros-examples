@@ -52,23 +52,24 @@ public:
    * mvVISLAM.h file to get the description for each field.
    **/
   typedef struct {
-    float64_t tbc[3];
-    float64_t ombc[3];
-    float64_t delta;
-    float64_t std0Tbc[3];
-    float64_t std0Ombc[3];
-    float64_t std0Delta;
-    float64_t accelMeasRange;
-    float64_t gyroMeasRange;
-    float64_t stdAccelMeasNoise;
-    float64_t stdGyroMeasNoise;
-    float64_t stdCamNoise;
-    float64_t minStdPixelNoise;
+    float32_t tbc[3];
+    float32_t ombc[3];
+    float32_t delta;
+    float32_t std0Tbc[3];
+    float32_t std0Ombc[3];
+    float32_t std0Delta;
+    float32_t accelMeasRange;
+    float32_t gyroMeasRange;
+    float32_t stdAccelMeasNoise;
+    float32_t stdGyroMeasNoise;
+    float32_t stdCamNoise;
+    float32_t minStdPixelNoise;
     bool      failHighPixelNoisePoints;
-    float64_t logDepthBootstrap;
+    float32_t logDepthBootstrap;
     bool      useLogCameraHeight;
-    float64_t logCameraHeightBootstrap;
+    float32_t logCameraHeightBootstrap;
     bool      noInitWhenMoving;
+    float32_t limitedIMUbWtrigger;
   } InitParams;
 
   /**
