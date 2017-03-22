@@ -92,6 +92,8 @@ adb shell
 dpkg -i /home/linaro/mv<version>.deb
 ```
 
+*NOTE:* MV release 0.8 and earlier required to set the MV_SDK environment variable.  This is no longer needed.  Make sure to unset this variable if it is set.  Not doing so will give an compilation error that says, "mv.h" file is not found.
+
 #### Machine Vision SDK License Installation
 
 The Machine Vision SDK will need a license file to run.  Obtain a research and development license file from [here](https://developer.qualcomm.com/sdflight-key-req)
