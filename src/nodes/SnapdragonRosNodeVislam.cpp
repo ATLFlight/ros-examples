@@ -111,7 +111,7 @@ void Snapdragon::RosNode::Vislam::ThreadMain() {
   Snapdragon::VislamManager::InitParams vislamParams;
 
   vislamParams.tbc[0] = 0.005;
-  vislamParams.tbc[1] = -0.0150;
+  vislamParams.tbc[1] = 0.0150;
   vislamParams.tbc[2] = 0.0;
 
   vislamParams.ombc[0] = 0.0;
