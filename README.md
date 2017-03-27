@@ -19,6 +19,7 @@ This example assumes that you are familiar with ROS framework.  If you are new t
   * [Start VISLAM ROS node](#start-vislam-ros-node)
   * [Verification](#verification)
 1. [Snapdragon Machine Vision VISLAM FAQ's](#snapdragon-machine-vision-vislam-faqs)
+  * [VISLAM IMU to Camera Transformation(tbc/ombc)](#imu-to-camera-transformation)
 
 ## High-Level Block Diagram
 ![SnapVislamRosNodeBlockDiagram](images/SnapVislamRosNodeBlockDiagram.jpg)
@@ -239,7 +240,7 @@ The example demonstrates console echo for vislam/pose information.  To validate 
 
 Since the example is generating a ROS topic, ROS visulation tool like RVIZ can be used to view the pose information. The RVIZ integration is left as an exercise for the user.
 
-### How do I set my own values for the initial IMU-to-camera transformation?
+### How do I set my own values for the initial IMU-to-camera transformation? <a name="imu-to-camera-transformation"></a>
 
 The transformation between the IMU and camera is required for initializing VISLAM. While VISLAM actively estimates this
 transform, an accurate initial estimate is important. If you plan to change the location of the camera and/or IMU, you
