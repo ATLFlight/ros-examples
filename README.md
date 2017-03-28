@@ -276,6 +276,9 @@ Given these coordinate frames, tbc and ombc values are found as follows:
 If the ombc is converted to a rotation matrix (R), it can be combined with the tbc (T) such that a vector in the camera
 frame can be expressed in the IMU frame, X_IMU = R * X_camera + T.
 
+The ombc uses axis-angle parameterization that has only three parameters. (See [here](https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation#Rotation_vector) ).
+The X, Y, and Z components describe the vector about which we rotate, and the magnitude of this vector describes the magnitude of rotation.
+
 The default values for tbc and ombc are provided in [SnapdragonRosNodeVislam.cpp](src/nodes/SnapdragonRosNodeVislam.cpp), which are
 
 ```
@@ -283,8 +286,8 @@ The default values for tbc and ombc are provided in [SnapdragonRosNodeVislam.cpp
   vislamParams.tbc[1] = 0.0150;   // Y displacement [m]
   vislamParams.tbc[2] = 0.0;      // Z displacement [m]
 
-  vislamParams.ombc[0] = 0.0;     // rotation of  0 deg about X
-  vislamParams.ombc[1] = 0.0;     // rotation of  0 deg about Y
+  vislamParams.ombc[0] = 0.0;     // rotation of 90 deg about Z
+  vislamParams.ombc[1] = 0.0;     // rotation of 90 deg about Z
   vislamParams.ombc[2] = 1.57;    // rotation of 90 deg about Z
 ```
 
