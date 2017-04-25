@@ -2,6 +2,8 @@
 
 This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>. 
 
+
+
 This example assumes that you are familiar with ROS framework.  If you are new to ROS, refer to [ROS Start Guide](http://wiki.ros.org/ROS/StartGuide) first to get started.
 
 1. [High-Level Block Diagram](#high-level-block-diagram)
@@ -24,6 +26,19 @@ This example assumes that you are familiar with ROS framework.  If you are new t
 ![SnapVislamRosNodeBlockDiagram](images/SnapVislamRosNodeBlockDiagram.jpg)
 
 ## Setup and build process
+
+** NOTE: ** These instructions are for VISLAM version mv_0.9.1_8x74.deb.  For earlier versions refer to [this](https://github.com/ATLFlight/ros-examples) page.
+
+### Summary of setup-changes from last release( mv0.8 )
+
+| Item | Previous release | Current Release |
+|----|----|----|
+|cross-compile setup(qrlSDK)| needed | Not needed.  The missing files are already part of the new image |
+|----|----|----|
+|MV_SDK environment variable| needed | Not needed.  The new mv installation puts the library files under /usr/lib |
+|----|----|----|
+|MV License file installation | needed.  Should be placed in the /opt/qualcomm/mv/lib/mv/bin/lin/8x74/ | needed should be placed at /usr/lib |
+|----|----|----|
 
 The current build process is supported only on-target (i.e. on the Snapdragon Flight<sup>TM</sup> Board).  Future release(s) will support off-target cross-compilation on a host computer.
 
@@ -53,27 +68,6 @@ adb shell
 source /home/linaro/.bashrc
 ```
 
-#### Cross-Compile Build Environment
-
-Get the latest Snapdragon Flight<sup>TM</sup> qrlSDK for your Ubuntu 14.04 host computer by following the instructions [here](https://github.com/ATLFlight/ATLFlightDocs/blob/master/AppsGettingStarted.md)
-
-**NOTE**: For this example, you will need the qrlSDK to get the missing files on to the target (see below).  
-
-
-  1. Platform build setup for camera headers
-
-    **NOTE**: For on-target camera development there are few header files missing on the target, but are part of the qrlSDK.  To fix this, the missing files need to be pushed on to the target.
-    This is an interim solution and will be addressed in future releases.
-
-    Push the following missing files to the target:
-
-```
-cd <sdk_root_install_path>/sysroots/eagle8074/usr/include
-adb push camera.h /usr/include
-adb push camera_parameters.h /usr/include 
-adb shell sync
-```
-
 #### Install ROS on Snapdragon Platform.
 
 Refer to the following [page](https://github.com/ATLFlight/ATLFlightDocs/blob/master/SnapdragonROSInstallation.md) for ROS installation on Snapdragon Flight<sup>TM</sup> platform.
@@ -82,7 +76,7 @@ Refer to the following [page](https://github.com/ATLFlight/ATLFlightDocs/blob/ma
 
 * Download the Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
 * The package name will be mv\<version\>.deb.  
-** Example: *mv0.9.deb*
+** Example: *mv0.9.1_8x74.deb*
 * push the deb package to the target and install it.
 
 ```
