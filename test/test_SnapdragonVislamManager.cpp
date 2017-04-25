@@ -30,6 +30,131 @@
  *
  ****************************************************************************/
 #include "SnapdragonVislamManager.hpp"
+#include <cmath>
+
+int16_t TestVislam( Snapdragon::VislamManager& vislam_man ) {
+  int32_t vislam_ret;
+  int32_t max_init_tries = 100;
+  int32_t max_poses = 100;
+  int32_t count = 0;
+  int32_t init_count = 0;
+  bool vislam_init_successful = false;
+  mvVISLAMPose vislamPose;
+  int64_t vislamFrameId;
+  uint64_t timestamp_ns;
+  std::vector<mvVISLAMPose> pose_history;
+
+  //loop to make sure that the initialzation is completed in < max_init_tries;
+  while( !vislam_init_successful && init_count < max_init_tries ) {
+    vislam_ret = vislam_man.GetPose( vislamPose, vislamFrameId, timestamp_ns );
+    if( vislam_ret == 0 ) {
+      if( vislamPose.poseQuality != MV_TRACKING_STATE_FAILED && vislamPose.poseQuality != MV_TRACKING_STATE_INITIALIZING) {
+        // this indicates that initialization is successful.
+        vislam_init_successful = true;
+      }
+      else {
+        init_count++;
+      }
+    }  
+  }
+
+  if( !vislam_init_successful ) {
+    std::cerr << "FAIL(): Error: Could not initialize VISLAM in: " << max_init_tries << " attempts" << std::endl;
+    std::cerr << "   Possible causes: " << std::endl;
+    std::cerr << "     1. Not enough Featues   ; Remedy: Place the board in a position where the optic flow can see the features" << std::endl;
+    std::cerr << "     2. Board is moving      ; Remedy: Place the board stationary" << std::endl;
+    std::cerr << "     3. Bad IMU or Bad Images; Remedy: Test Camera/IMU independently to validate that the input data is correct" << std::endl;
+    std::cerr << "     4. None of the above    ; Remedy: VISLAM configuration is incorrect or bug in algorithm" << std::endl;
+    return -1;
+  }
+
+  count = 0;
+  while( count < max_poses ) {
+    vislam_ret = vislam_man.GetPose( vislamPose, vislamFrameId, timestamp_ns );
+    if( vislam_ret == 0 ) {
+            pose_history.push_back( vislamPose );
+            /*
+            printf( "%lld, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f\n",
+                    vislamFrameId,
+                    vislamPose.bodyPose.matrix[0][0], vislamPose.bodyPose.matrix[0][1], vislamPose.bodyPose.matrix[0][2], vislamPose.bodyPose.matrix[0][3],
+                    vislamPose.bodyPose.matrix[1][0], vislamPose.bodyPose.matrix[1][1], vislamPose.bodyPose.matrix[1][2], vislamPose.bodyPose.matrix[1][3],
+                    vislamPose.bodyPose.matrix[2][0], vislamPose.bodyPose.matrix[2][1], vislamPose.bodyPose.matrix[2][2], vislamPose.bodyPose.matrix[2][3], 
+                    vislamPose.timeAlignment, vislamPose.velocity[0], vislamPose.velocity[1], vislamPose.velocity[2] ); 
+            */     
+    }
+    else {
+      //std::cout << "Fail(): Error Getting pose from VISLAM" << std::endl;
+    }
+    count++;
+  }
+
+  // now run the check to make sure the stationary bench test is passing.
+  // if there are less than max_poses; then it is an error.
+  if( pose_history.size() < max_poses ) {
+    std::cerr << "FAIL(): Error getting " << max_poses << ".  Got only: " << pose_history.size() << " poses. " << std::endl;
+    return -1;
+  }
+
+  // check to see if there is atleast one good pose. and since this is a stationary test, 
+  // the returned pose should be the [0,0,0] for translation and the Rotation matrix should be identity.
+  int16_t valid_pose_count = 0;
+  int16_t good_translation_pose_count = 0;
+  int16_t good_rotation_pose_count = 0;
+  int16_t high_quality_pose_count = 0;
+  int16_t low_quality_pose_count = 0;
+  int32_t loop_count = 0;
+  for( mvVISLAMPose p : pose_history ) {
+    if( p.poseQuality != MV_TRACKING_STATE_FAILED && p.poseQuality != MV_TRACKING_STATE_INITIALIZING ) {
+      valid_pose_count++;
+      if( p.poseQuality == MV_TRACKING_STATE_LOW_QUALITY ) {
+        low_quality_pose_count ++;
+      }
+      if( p.poseQuality == MV_TRACKING_STATE_HIGH_QUALITY ) {
+        high_quality_pose_count++;
+
+        if( ( std::abs( p.bodyPose.matrix[0][3] ) < 0.01 )  &&
+            ( std::abs( p.bodyPose.matrix[1][3] ) < 0.01 )  && 
+            ( std::abs( p.bodyPose.matrix[2][3] ) < 0.01 ) ) {
+          good_translation_pose_count ++;
+        }
+
+        //brute force method to check that the rotation matrix is an indentity matrix.
+        if( ( std::abs( std::abs( p.bodyPose.matrix[0][0] ) - 1.0 ) < 0.001 ) && 
+            ( std::abs( std::abs( p.bodyPose.matrix[1][1] ) - 1.0 ) < 0.001 ) && 
+            ( std::abs( std::abs( p.bodyPose.matrix[2][2] ) - 1.0 ) < 0.001 ) && 
+            ( std::abs( p.bodyPose.matrix[0][1])  < 0.001 ) && ( std::abs( p.bodyPose.matrix[0][2])  < 0.001 ) && 
+            ( std::abs( p.bodyPose.matrix[1][0])  < 0.001 ) && ( std::abs( p.bodyPose.matrix[1][2])  < 0.001 ) && 
+            ( std::abs( p.bodyPose.matrix[2][0])  < 0.001 ) && ( std::abs( p.bodyPose.matrix[2][1])  < 0.001 )  ) {
+          good_rotation_pose_count ++;
+        }
+        else {
+          // // this is debug only.  Remove it one done.
+          // std::cerr << "[" << loop_count << "]: " << std::endl << "{" << std::endl
+          //           << " " << p.bodyPose.matrix[0][0] << "," << p.bodyPose.matrix[0][1] << "," << p.bodyPose.matrix[0][1] << std::endl
+          //           << " " << p.bodyPose.matrix[1][0] << "," << p.bodyPose.matrix[1][1] << "," << p.bodyPose.matrix[1][1] << std::endl
+          //           << " " << p.bodyPose.matrix[2][0] << "," << p.bodyPose.matrix[2][1] << "," << p.bodyPose.matrix[2][1] << std::endl
+          //           << "}" << std::endl;
+        }
+      }
+    }
+    loop_count++;
+  }
+
+  // print the stats here.
+  std::cerr << " Initization Tries Count : " << init_count << std::endl;
+  std::cerr << " Stats After Initilization: " << std::endl;
+  std::cerr << "  Valid Pose       : " << valid_pose_count << std::endl;
+  std::cerr << "  Low Pose Quality : " << low_quality_pose_count << std::endl;
+  std::cerr << "  High Pose Quality: " << high_quality_pose_count << std::endl;
+  std::cerr << "     Good Translation : " << good_translation_pose_count << std::endl;
+  std::cerr << "     Good Rotation    : " << good_rotation_pose_count << std::endl;
+
+  if( good_translation_pose_count < (int16_t)(max_poses*0.9) ) {
+    std::cerr << "FAIL(): Error got too many bad translation information. expected greater than: " << (int16_t)(max_poses*0.9) << std::endl;
+    return -1;
+  }
+  return 0;
+}
 
 int main( int argc, char** argv ) {
   mvCameraConfiguration config;
@@ -122,28 +247,15 @@ int main( int argc, char** argv ) {
     std::cout << "FAIL() Error Starting the VISLAM Manager rc: " << vislam_ret << std::endl;
     return -1;
   }
+  
+  int16_t rc = 0;
 
-  // now try to get the pose and print it to the screen.
-  int32_t max_poses = 100;
-  int32_t count = 0;
-  mvVISLAMPose vislamPose;
-  int64_t vislamFrameId;
-  uint64_t timestamp_ns;
-  while( count < max_poses ) {
-    vislam_ret = vislam_man.GetPose( vislamPose, vislamFrameId, timestamp_ns );
-    if( vislam_ret == 0 ) {
-            printf( "%lld, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f, %0.4f\n",
-                    vislamFrameId,
-                    vislamPose.bodyPose.matrix[0][0], vislamPose.bodyPose.matrix[0][1], vislamPose.bodyPose.matrix[0][2], vislamPose.bodyPose.matrix[0][3],
-                    vislamPose.bodyPose.matrix[1][0], vislamPose.bodyPose.matrix[1][1], vislamPose.bodyPose.matrix[1][2], vislamPose.bodyPose.matrix[1][3],
-                    vislamPose.bodyPose.matrix[2][0], vislamPose.bodyPose.matrix[2][1], vislamPose.bodyPose.matrix[2][2], vislamPose.bodyPose.matrix[2][3], 
-                    vislamPose.timeAlignment, vislamPose.velocity[0], vislamPose.velocity[1], vislamPose.velocity[2] );      
-    }
-    else {
-      std::cout << "Fail(): Error Getting pose from VISLAM" << std::endl;
-    }
-    count++;
-  }
+  rc = TestVislam( vislam_man );
+  if( rc == 0 ) {
+    std::cerr << "SUCCESS(): Passed VISLAM Stationary Initlization Tests" << std::endl;
+  }  
+ 
   vislam_man.Stop();
-  return 0;
+
+  return rc;
 }
