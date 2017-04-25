@@ -27,18 +27,16 @@ This example assumes that you are familiar with ROS framework.  If you are new t
 
 ## Setup and build process
 
-** NOTE: ** These instructions are for VISLAM version mv_0.9.1_8x74.deb.  For earlier versions refer to [this](https://github.com/ATLFlight/ros-examples) page.
+**NOTE:** These instructions are for VISLAM version mv_0.9.1_8x74.deb.  For earlier versions refer to [this](https://github.com/ATLFlight/ros-examples) page.
+
 
 ### Summary of setup-changes from last release( mv0.8 )
 
-| Item | Previous release | Current Release |
+| Item | Previous release - mv0.8 | Current Release - mv0.9.1 |
 |----|----|----|
 |cross-compile setup(qrlSDK)| needed | Not needed.  The missing files are already part of the new image |
-|----|----|----|
 |MV_SDK environment variable| needed | Not needed.  The new mv installation puts the library files under /usr/lib |
-|----|----|----|
 |MV License file installation | needed.  Should be placed in the /opt/qualcomm/mv/lib/mv/bin/lin/8x74/ | needed should be placed at /usr/lib |
-|----|----|----|
 
 The current build process is supported only on-target (i.e. on the Snapdragon Flight<sup>TM</sup> Board).  Future release(s) will support off-target cross-compilation on a host computer.
 
