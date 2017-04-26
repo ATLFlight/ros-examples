@@ -1,6 +1,6 @@
 # Snapdragon Flight VISLAM-ROS Sample Code
 
-This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>. 
+This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>.
 
 
 
@@ -8,20 +8,21 @@ This example assumes that you are familiar with ROS framework.  If you are new t
 
 1. [High-Level Block Diagram](#high-level-block-diagram)
 1. [Setup and build process](#setup-and-build-process)
-  * [Summary of changes from previous release](#summary-of-changes-from-previous-release)
-  * [Pre-requisites](#pre-requisites)
-    * [Platform BSP](#platform-bsp)
-    * [Cross-Compile Build Environment](#cross-compile-build-environment)
-    * [Install ROS on Snapdragon Platform](#install-ros-on-snapdragon-platform)
-    * [Install Snapdragon Machine Vision SDK](#install-snapdragon-machine-vision-sdk)
-    * [Machine Vision SDK License Installation](#machine-vision-sdk-license-installation)
-  * [Clone and build sample code](#clone-and-build-sample-code)
+   * [Summary of changes from previous release](#summary-of-changes-from-previous-release)
+   * [Pre-requisites](#pre-requisites)
+     * [Platform BSP](#platform-bsp)
+     * [Cross-Compile Build Environment](#cross-compile-build-environment)
+     * [Install ROS on Snapdragon Platform](#install-ros-on-snapdragon-platform)
+     * [Install Snapdragon Machine Vision SDK](#install-snapdragon-machine-vision-sdk)
+     * [Machine Vision SDK License Installation](#machine-vision-sdk-license-installation)
+   * [Clone and build sample code](#clone-and-build-sample-code)
 1. [Run sample code](#run-sample-code)
-  * [Start roscore](#start-roscore)
-  * [Start imu_app application](#start-imu_app-application)
-  * [Start VISLAM ROS node](#start-vislam-ros-node)
-  * [Verification](#verification)
+   * [Start roscore](#start-roscore)
+   * [Start imu_app application](#start-imu_app-application)
+   * [Start VISLAM ROS node](#start-vislam-ros-node)
+   * [Verification](#verification)
 1. [Snapdragon Machine Vision VISLAM FAQ's](#snapdragon-machine-vision-vislam-faqs)
+   * [VISLAM IMU to Camera Transformation(tbc/ombc)](#imu-to-camera-transformation)
 
 ## High-Level Block Diagram
 ![SnapVislamRosNodeBlockDiagram](images/SnapVislamRosNodeBlockDiagram.jpg)
@@ -59,7 +60,7 @@ chmod +rw /home/linaro
 echo "export HOME=/home/linaro/" >> /home/linaro/.bashrc
 ```
 
-If you use SSH, the home environment variable should be set correct after the above step. 
+If you use SSH, the home environment variable should be set correct after the above step.
 If you use ADB, do the following for each session:
 
 ```
@@ -177,13 +178,13 @@ This assumes that the ROS build command is successful.
 
 **NOTE**: This process is for running VISLAM in standalone mode only.  Integration with a flight stack such as PX4 is not verified.
 
-**NOTE**: The steps below show each application to be run in a separate adb shell.  This is for illustration purpose only.  The applications, like **rocore**, **imu_app**, **snap_vislam_node** can be run in the background to meet your development/runtime workflow.  
+**NOTE**: The steps below show each application to be run in a separate adb shell.  This is for illustration purpose only.  The applications, like **rocore**, **imu_app**, **snap_vislam_node** can be run in the background to meet your development/runtime workflow.
 
 ### Start roscore
 Start roscore in a shell as follows:
 
 ```
-adb shell 
+adb shell
 source /home/linaro/.bashrc
 roscore
 ```
@@ -194,8 +195,8 @@ Starting the **imu_app** is **MANDATORY**.  Without this, the sample code will n
 
 For VISLAM to work, it needs the IMU data.  On Snapdragon Flight<sub>TM</sub>, the MPU9x50(IMU) is connected to the ADSP and the Snapdragon Flight<sub>TM</sub> supports an Apps processor API to get the IMU Data from ADSP.  Start the imu_app before using the API to retrieve IMU data.
 
-**NOTE**: Staring the **imu_app** will initialize the MPU9x50 driver on ADSP.  There can be only one app that initilizes the MPU9x50 driver on ADSP.  If there are more than one app that intializes the MPU9x50 driver, the attempts after the first one, will fail.  
-  
+**NOTE**: Staring the **imu_app** will initialize the MPU9x50 driver on ADSP.  There can be only one app that initilizes the MPU9x50 driver on ADSP.  If there are more than one app that intializes the MPU9x50 driver, the attempts after the first one, will fail.
+
 Run **imu_app** in a shell.
 
 ```
@@ -234,7 +235,7 @@ rostopic echo /vislam/pose
 
 ### I do not see any ROS vislam/pose topic when I run the snap_ros_node
 
-VISLAM requires a minimum set of points to initiaize correctly.  If the points are not detected, the pose quality reported by the algorithm is "FAIL" or "INITIALIZING".   In this case, there won't be any ROS vislam/pose topics published. One scenario is if board is laying on a surface and the downward camera is very close to the surface.
+VISLAM requires a minimum set of points to initialize correctly.  If the points are not detected, the pose quality reported by the algorithm is "FAIL" or "INITIALIZING".   In this case, there won't be any ROS vislam/pose topics published. One scenario is if board is laying on a surface and the downward camera is very close to the surface.
 
 To fix this, lift up the board a few inches from the surface and set it stationary for few seconds until the initalization is complete.  Once completed, you should see the ROS vislam/pose topics published.
 
@@ -248,8 +249,70 @@ Once the change is done, recompile the code and re-test.
 
 **NOTE**: Allowing for initialization when board is moving will potentially give bad VISLAM pose information.  The recommended setting is as used in the example.
 
-### I do see the ROS vislam/pose topics published how do I verfy if the VISLAM is working?
+### I do see the ROS vislam/pose topics published how do I verify if the VISLAM is working?
 
 The example demonstrates console echo for vislam/pose information.  To validate if the vislam/pose is correct, you can move the board exercising all 6DOF motion to see the x,y,z changes in both the linear and rotational axes.  For example, if you move the board up and down, the "z" axes of the linear pose should change.  Similarily if you rotate the board on the "z" axes, the "z" value for the quaternion form should change.  See the [ROS pose message](http://docs.ros.org/api/geometry_msgs/html/msg/Pose.html) for the details on the pose message fields.
 
 Since the example is generating a ROS topic, ROS visulation tool like RVIZ can be used to view the pose information. The RVIZ integration is left as an exercise for the user.
+
+### How do I set my own values for the initial IMU-to-camera transformation? <a name="imu-to-camera-transformation"></a>
+
+The transformation between the IMU and camera is required for initializing VISLAM. While VISLAM actively estimates this
+transform, an accurate initial estimate is important. If you plan to change the location of the camera and/or IMU, you
+will need to provide a new initial estimate for this transform.
+
+The transform from IMU to camera is defined by the parameters called "tbc" and "ombc" for the translational and
+rotational components, respectively. "b" refers to the body, or IMU, frame and "c" refers to the camera frame.
+
+#### Coordinate frame conventions
+
+The IMU coordinate frame is right-handed and defined as follows:
+
+* X forward on the Snapdragon Flight board
+* Y to the right of the board
+* Z down with respect to the board
+
+The camera coordinate frame is right-handed and defined as follows:
+
+* X to the right in the image
+* Y down in the image
+* Z out of the camera (into the image)
+
+![VislamCoordinateFrames](images/VislamCoordinateFrames.png)
+
+#### Setting tbc and ombc
+
+Given these coordinate frames, tbc and ombc values are found as follows:
+
+* tbc is the position of the camera frame origin with respect to the IMU frame origin, written in the IMU coordinate frame, in meters.
+* ombc is the associated rotation that transforms a vector in the camera frame to the IMU frame, converted to axis-angle
+  representation (three components), in radians.
+
+If the ombc is converted to a rotation matrix (R), it can be combined with the tbc (T) such that a vector in the camera
+frame can be expressed in the IMU frame, X_IMU = R * X_camera + T.
+
+The ombc uses axis-angle parameterization that has only three parameters. (See [here](https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation#Rotation_vector) ).
+The X, Y, and Z components describe the vector about which we rotate, and the magnitude of this vector describes the magnitude of rotation.
+
+The default values for tbc and ombc are provided in [SnapdragonRosNodeVislam.cpp](src/nodes/SnapdragonRosNodeVislam.cpp), which are
+
+```
+  vislamParams.tbc[0] = 0.005;    // X displacement [m]
+  vislamParams.tbc[1] = 0.0150;   // Y displacement [m]
+  vislamParams.tbc[2] = 0.0;      // Z displacement [m]
+
+  vislamParams.ombc[0] = 0.0;     // rotation of 90 deg about Z
+  vislamParams.ombc[1] = 0.0;     // rotation of 90 deg about Z
+  vislamParams.ombc[2] = 1.57;    // rotation of 90 deg about Z
+```
+
+and describe the downward-facing camera shifted in X and Y, and rotated 90 degrees about the Z axis, with respect to the
+IMU.
+
+#### Verifying correct estimates
+
+The VISLAM module provides the estimated transformation within the mvVISLAMPose struct, through the fields called "tbc"
+and "Rbc". tbc is exactly as defined above. Rbc is the 3x3 rotation matrix describing ombc above. If the initial
+estimates for tbc and ombc are correct, the values of tbc and Rbc should converge to values close to these initial
+guesses. Convergence can be verified by plotting the mvVISLAMPose output after sufficient excitation of all six degrees of
+freedom of the board (usually after 30 seconds of dynamic motion).

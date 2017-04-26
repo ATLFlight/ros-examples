@@ -236,7 +236,7 @@ int32_t Snapdragon::VislamManager::Imu_IEventListener_ProcessSamples( sensor_imu
   return rc;
 }
 
-int32_t Snapdragon::VislamManager::GetPose( mvVISLAMPose& pose, int64_t& pose_frame_id, uint64_t timestamp_ns ) {
+int32_t Snapdragon::VislamManager::GetPose( mvVISLAMPose& pose, int64_t& pose_frame_id, uint64_t& timestamp_ns ) {
   int32_t rc = 0;
   if( !initialized_ ) {
     WARN_PRINT( "VislamManager not initialize" );
