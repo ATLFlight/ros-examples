@@ -113,7 +113,7 @@ dpkg -i /home/linaro/mv<version>.deb
 
 The Machine Vision SDK will need a license file to run.  Obtain a research and development license file from [here](https://developer.qualcomm.com/sdflight-key-req)
 
-The license file needs to be placed at the same location as the MV SDK library **libmv.so**.
+The license file needs to be placed at the same location as the MV SDK library **libmv1.so**.
 
 Push the license file to the target using the following command:
 
