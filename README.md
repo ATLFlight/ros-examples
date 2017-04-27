@@ -2,7 +2,9 @@
 
 This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>.
 
+This example code is for MV SDK release mv_0.9.1.
 
+**NOTE**: The older release(mv0.8) instructions are [here](https://github.com/ATLFlight/ros-examples/tree/mv-release-0.8).  The mv0.8 release will deprecated after May. 4th 2017. 
 
 This example assumes that you are familiar with ROS framework.  If you are new to ROS, refer to [ROS Start Guide](http://wiki.ros.org/ROS/StartGuide) first to get started.
 
