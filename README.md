@@ -2,7 +2,7 @@
 
 This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>.
 
-This example code is for MV SDK release mv_0.9.1.
+This example code is for MV SDK release [mv_0.9.1](https://developer.qualcomm.com/hardware/snapdragon-flight/tools).
 
 **NOTE**: The older release(mv0.8) instructions are [here](https://github.com/ATLFlight/ros-examples/tree/mv-release-0.8).  The mv0.8 release will deprecated after May. 4th 2017. 
 
@@ -97,7 +97,7 @@ Refer to the following [page](https://github.com/ATLFlight/ATLFlightDocs/blob/ma
 
 #### Install Snapdragon Machine Vision SDK
 
-* Download the Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
+* Download the latest Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
 * The package name will be mv\<version\>.deb.  
 ** Example: *mv0.9.1_8x74.deb*
 * push the deb package to the target and install it.
