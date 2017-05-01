@@ -2,16 +2,21 @@
 
 This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>.
 
+This example code is for MV SDK release [mv_0.9.1](https://developer.qualcomm.com/hardware/snapdragon-flight/tools).
+
+**NOTE**: The older release(mv0.8) instructions are [here](https://github.com/ATLFlight/ros-examples/tree/mv-release-0.8).  The mv0.8 release will deprecated after May. 4th 2017. 
+
 This example assumes that you are familiar with ROS framework.  If you are new to ROS, refer to [ROS Start Guide](http://wiki.ros.org/ROS/StartGuide) first to get started.
 
 1. [High-Level Block Diagram](#high-level-block-diagram)
 1. [Setup and build process](#setup-and-build-process)
+   * [Summary of changes from previous release](#summary-of-changes-from-previous-release)
    * [Pre-requisites](#pre-requisites)
-      * [Platform BSP](#platform-bsp)
-      * [Cross-Compile Build Environment](#cross-compile-build-environment)
-      * [Install ROS on Snapdragon Platform](#install-ros-on-snapdragon-platform)
-      * [Install Snapdragon Machine Vision SDK](#install-snapdragon-machine-vision-sdk)
-      * [Machine Vision SDK License Installation](#machine-vision-sdk-license-installation)
+     * [Platform BSP](#platform-bsp)
+     * [Cross-Compile Build Environment](#cross-compile-build-environment)
+     * [Install ROS on Snapdragon Platform](#install-ros-on-snapdragon-platform)
+     * [Install Snapdragon Machine Vision SDK](#install-snapdragon-machine-vision-sdk)
+     * [Machine Vision SDK License Installation](#machine-vision-sdk-license-installation)
    * [Clone and build sample code](#clone-and-build-sample-code)
 1. [Run sample code](#run-sample-code)
    * [Start roscore](#start-roscore)
@@ -25,6 +30,17 @@ This example assumes that you are familiar with ROS framework.  If you are new t
 ![SnapVislamRosNodeBlockDiagram](images/SnapVislamRosNodeBlockDiagram.jpg)
 
 ## Setup and build process
+
+**NOTE:** These instructions are for VISLAM version mv_0.9.1_8x74.deb.  For earlier versions refer to [this](https://github.com/ATLFlight/ros-examples) page.
+
+
+### Summary of changes from previous release
+
+| Item | Previous release - mv0.8 | Current Release - mv0.9.1 |
+|----|----|----|
+|MV_SDK environment variable| needed | Not needed.  The new mv installation puts the library files under /usr/lib |
+|MV License file installation | needed.  Should be placed in the /opt/qualcomm/mv/lib/mv/bin/lin/8x74/ | needed should be placed at /usr/lib |
+|MV link library Name| libmv.so | libmv1.so.  Update the respective make files to link against libmv1 instead of libmv.so |
 
 The current build process is supported only on-target (i.e. on the Snapdragon Flight<sup>TM</sup> Board).  Future release(s) will support off-target cross-compilation on a host computer.
 
@@ -81,9 +97,9 @@ Refer to the following [page](https://github.com/ATLFlight/ATLFlightDocs/blob/ma
 
 #### Install Snapdragon Machine Vision SDK
 
-* Download the Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
-* The package name will be mv\<version\>.deb.
-** Example: *mv0.8.deb*
+* Download the latest Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
+* The package name will be mv\<version\>.deb.  
+** Example: *mv0.9.1_8x74.deb*
 * push the deb package to the target and install it.
 
 ```
@@ -91,19 +107,20 @@ adb push mv<version>.deb /home/linaro
 adb shell sync
 adb shell
 dpkg -i /home/linaro/mv<version>.deb
-echo "export MV_SDK=/opt/qualcomm/mv/lib/mv" >> /home/linaro/.bashrc
 ```
+
+*NOTE:* MV release 0.8 and earlier required to set the MV_SDK environment variable.  This is no longer needed.  Make sure to unset this variable if it is set.  Not doing so will give an compilation error that says, "mv.h" file is not found.
 
 #### Machine Vision SDK License Installation
 
 The Machine Vision SDK will need a license file to run.  Obtain a research and development license file from [here](https://developer.qualcomm.com/sdflight-key-req)
 
-The license file needs to be placed at the same location as the MV SDK library **libmv.so**.
+The license file needs to be placed at the same location as the MV SDK library **libmv1.so**.
 
 Push the license file to the target using the following command:
 
 ```
-adb push snapdragon-flight-license.bin /opt/qualcomm/mv/lib/mv/bin/lin/8x74/
+adb push snapdragon-flight-license.bin /usr/lib/
 adb shell sync
 ```
 

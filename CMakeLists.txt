@@ -118,7 +118,7 @@ message( "MV_SDK: $ENV{MV_SDK}"  )
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  $ENV{MV_SDK}/inc
+  $ENV{MV_SDK}/usr/include/mv
 )
 
 add_definitions(-std=c++11) 
@@ -137,7 +137,7 @@ target_include_directories( snap_vislam PUBLIC
   src/imu/
   src/vislam/
   src/common/
-  $ENV{MV_SDK}/inc )
+  $ENV{MV_SDK}/usr/include/mv )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -146,17 +146,17 @@ target_include_directories( snap_vislam PUBLIC
 
 
 # Make sure we include lib dir for Linux build
-add_library(mv SHARED IMPORTED)
-set_property(TARGET mv PROPERTY IMPORTED_LOCATION $ENV{MV_SDK}/bin/lin/8x74/libmv.so)
+add_library(mv1 SHARED IMPORTED)
+set_property(TARGET mv1 PROPERTY IMPORTED_LOCATION $ENV{MV_SDK}/usr/lib/libmv1.so)
 
 add_executable( test_snap_cam_manager test/test_SnapdragonCameraManager.cpp )
-target_link_libraries( test_snap_cam_manager snap_vislam sensor_imu mv pthread camera  )
+target_link_libraries( test_snap_cam_manager snap_vislam sensor_imu mv1 pthread camera  )
 
 add_executable( test_imu_manager test/test_SnapdragonImuManager.cpp )
-target_link_libraries( test_imu_manager snap_vislam sensor_imu mv pthread camera  )
+target_link_libraries( test_imu_manager snap_vislam sensor_imu mv1 pthread camera  )
 
 add_executable( test_vislam test/test_SnapdragonVislamManager.cpp )
-target_link_libraries( test_vislam snap_vislam sensor_imu mv pthread camera  )
+target_link_libraries( test_vislam snap_vislam sensor_imu mv1 pthread camera  )
 
 ## Declare a C++ executable
 add_executable(snap_vislam_node src/nodes/SnapdragonRosNodeVislam.cpp src/nodes/SnapdragonRosNodeVislam_main.cpp )
@@ -168,7 +168,7 @@ add_dependencies(snap_vislam_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_E
 ## Specify libraries to link a library or executable target against
  target_link_libraries(snap_vislam_node
    snap_vislam
-   mv 
+   mv1 
    camera
    sensor_imu
    pthread
