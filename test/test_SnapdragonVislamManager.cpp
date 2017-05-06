@@ -236,7 +236,8 @@ int main( int argc, char** argv ) {
 
   Snapdragon::VislamManager vislam_man;
   int32_t vislam_ret;
-  vislam_ret = vislam_man.Initialize( param, vislamParams );
+  std::string log_root_folder( "./mvVILSAM_logs/" );
+  vislam_ret = vislam_man.Initialize( param, vislamParams, true );
   if( vislam_ret != 0 ) {
     std::cout << "FAIL() Error Initializing the VISLAM Manager rc: " << vislam_ret << std::endl;
     return -1;

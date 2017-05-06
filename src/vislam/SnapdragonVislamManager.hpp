@@ -32,6 +32,7 @@
 #pragma once
 #include "SnapdragonCameraTypes.hpp"
 #include "mvVISLAM.h"
+#include "mvSRW.h"
 #include "SnapdragonCameraManager.hpp"
 #include "SnapdragonImuManager.hpp"
 #include <mutex>
@@ -79,8 +80,15 @@ public:
 
   /**
    * Initalizes the VISLAM Manager with Camera and VISLAM Parameters
+   * @param cam_params
+   *  The structure that holds the camera parameters.
    * @param params
    *  The structure that holds the VISLAM parameters.
+   * @param enable_logging
+   *  This will enable the logging for the VISLAM engine.  This is only needed during debugging.
+   *  Enabling this flag always will cause the disk space to fill up.
+   * @param log_root_folder
+   *  THe top level log folder where the logs files will be written.
    * @return 
    *  0 = success
    * otherwise = failure.
@@ -88,7 +96,9 @@ public:
   int32_t Initialize
   ( 
     const Snapdragon::CameraParameters& cam_params, 
-    const Snapdragon::VislamManager::InitParams& params
+    const Snapdragon::VislamManager::InitParams& params,
+    bool  enable_logging,
+    const std::string& log_root_folder = "./mv_vislam_logs/"
   );
 
   /**
@@ -179,4 +189,7 @@ private:
   std::mutex                    sync_mutex_;
   uint8_t*                      image_buffer_;
   size_t                        image_buffer_size_bytes_;
+  mvSRW_Writer*                 mv_sequence_writer_;
+  bool                          enable_logging_;
+  std::string                   log_root_folder_;
 };

@@ -101,7 +101,10 @@ private:
   std::atomic<bool> thread_stop_;
   std::atomic<bool> vislam_initialized_;
   ros::NodeHandle  nh_;
+  ros::NodeHandle  private_handle_;
   ros::Publisher   pub_vislam_pose_;
   ros::Publisher   pub_vislam_odometry_;
   Snapdragon::VislamManager vislam_manager_;
+  bool             enable_logging_;
+  std::string      log_root_folder_;
 };

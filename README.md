@@ -19,7 +19,6 @@ This example assumes that you are familiar with ROS framework.  If you are new t
      * [Machine Vision SDK License Installation](#machine-vision-sdk-license-installation)
    * [Clone and build sample code](#clone-and-build-sample-code)
 1. [Run sample code](#run-sample-code)
-   * [Start roscore](#start-roscore)
    * [Start imu_app application](#start-imu_app-application)
    * [Start VISLAM ROS node](#start-vislam-ros-node)
    * [Verification](#verification)
@@ -180,16 +179,7 @@ This assumes that the ROS build command is successful.
 
 **NOTE**: This process is for running VISLAM in standalone mode only.  Integration with a flight stack such as PX4 is not verified.
 
-**NOTE**: The steps below show each application to be run in a separate adb shell.  This is for illustration purpose only.  The applications, like **rocore**, **imu_app**, **snap_vislam_node** can be run in the background to meet your development/runtime workflow.
-
-### Start roscore
-Start roscore in a shell as follows:
-
-```
-adb shell
-source /home/linaro/.bashrc
-roscore
-```
+**NOTE**: The steps below show each application to be run in a separate adb shell.  This is for illustration purpose only.  The applications, like **imu_app**, **snap_vislam_node** can be run in the background to meet your development/runtime workflow.  
 
 ### Start imu_app application
 
@@ -216,13 +206,30 @@ sensor_imu_tester 5
 The app runs for 5 seconds and collects the IMU data received from the ADSP. It would generate a few IMU_*.txt files. If these files get generated and they contain IMU samples, then the IMU data reception mechanism on apps processor works fine.
 
 ### Start VISLAM ROS node
-To start the "snap_vislam_node" ROS node, the 2 steps above: [start roscore](#start-roscore) and [start imu_app](#start_imu_app_application) should be completed to make this work.
+To start the "snap_vislam_node" ROS node, the above step: [start imu_app](#start_imu_app_application) should be completed to make this work.
 
 ```
 adb shell
 source /home/linaro/.bashrc
-rosrun snap_ros_examples snap_vislam_node
+roscd
+cd ..
+roslaunch snap_ros_examples snap_ros.launch
 ```
+#### Logging
+
+To enable/disable logging change the "enable_logging" flag the launch file to "true".  Here is an example:
+
+```
+<launch>
+  <node pkg="snap_ros_examples" name="snap_vislam_node" type="snap_vislam_node"  output="screen">
+    <param name="enable_logging" value="true"/>
+    <param name="log_root_folder" value="/home/linaro/vislam_logs/"/>
+  </node>
+</launch>
+```
+
+**NOTE**: the logs will be stored in the "log_root_folder" that is specified. Change it log into a different folder.  
+**NOTE**: The current version will overwrite any data/log which may be present from a previous run.
 
 ### Verification
 If the above steps are complete and the applications starts successfully, the snap_vislam_node will publish /vislam/pose and /vislam/odometry topics. To view these topics, use the rostopic echo command.

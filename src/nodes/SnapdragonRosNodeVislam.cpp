@@ -40,13 +40,14 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/buffer.h>
 
-Snapdragon::RosNode::Vislam::Vislam( ros::NodeHandle nh ) : nh_(nh)
+Snapdragon::RosNode::Vislam::Vislam( ros::NodeHandle nh ) : nh_(nh), private_handle_("~")
 {
   pub_vislam_pose_ = nh_.advertise<geometry_msgs::PoseStamped>("vislam/pose",1);
   pub_vislam_odometry_ = nh_.advertise<nav_msgs::Odometry>("vislam/odometry",1);
   vislam_initialized_ = false;
   thread_started_ = false;
   thread_stop_ = false;
+
   // sleep here so tf buffer can get populated
   ros::Duration(1).sleep(); // sleep for 1 second
 }
@@ -160,9 +161,14 @@ void Snapdragon::RosNode::Vislam::ThreadMain() {
   cpaConfig.exposureCost = 1.0f;
   cpaConfig.gainCost = 0.3333f;
 
+  // read the parameters from the ROS parameter server.
+  private_handle_.param( "enable_logging", enable_logging_, false );
+  private_handle_.param( "log_root_folder", log_root_folder_, std::string( "/home/linaro/vislam_logs/" ) );
+  ROS_INFO( "enable_logging: %d log_root_folder: %s", enable_logging_, log_root_folder_.c_str() );
+
   param.mv_cpa_config = cpaConfig;   
   Snapdragon::VislamManager vislam_man;
-  if( vislam_man.Initialize( param, vislamParams ) != 0  ) {
+  if( vislam_man.Initialize( param, vislamParams, enable_logging_, log_root_folder_ ) != 0  ) {
     ROS_WARN_STREAM( "Snapdragon::RosNodeVislam::VislamThreadMain: Error initializing the VISLAM Manager " );
     thread_started_ = false;
     return;

@@ -39,6 +39,8 @@ Snapdragon::VislamManager::VislamManager() {
   initialized_ = false;
   image_buffer_size_bytes_ = 0;
   image_buffer_ = nullptr;
+  mv_sequence_writer_ = nullptr;
+  enable_logging_ = false;
 }
 
 Snapdragon::VislamManager::~VislamManager() {
@@ -69,18 +71,28 @@ int32_t Snapdragon::VislamManager::CleanUp() {
     vislam_ptr_ = nullptr;
   } 
 
+  // stop logging if it is enabled.
+  if( enable_logging_ && mv_sequence_writer_ != nullptr ) {
+    enable_logging_ = false;
+    mvSRW_Writer_Deinitialize( mv_sequence_writer_ );
+    mv_sequence_writer_ = nullptr;
+  }  
+
   if( image_buffer_ != nullptr ) {
     delete[] image_buffer_;
     image_buffer_ = nullptr;
     image_buffer_size_bytes_ = 0;
   }
+
   return 0;  
 }
 
 int32_t Snapdragon::VislamManager::Initialize
 ( 
   const Snapdragon::CameraParameters& cam_params,
-  const Snapdragon::VislamManager::InitParams& vislam_params
+  const Snapdragon::VislamManager::InitParams& vislam_params,
+  bool  enable_logging, 
+  const std::string& log_root_folder
 ) {
   cam_params_ = cam_params;
   vislam_params_ = vislam_params;
@@ -122,6 +134,21 @@ int32_t Snapdragon::VislamManager::Initialize
     );
     if( vislam_ptr_ == nullptr ) {
       rc = -1;
+    }
+  }
+
+  enable_logging_ = enable_logging;
+  if( enable_logging_ ) {
+    // intialize the sequence writer
+    log_root_folder_ = log_root_folder;
+    mvMonoCameraInit mono_cam;
+    mono_cam.name = "mv_vislam_cam";
+    mono_cam.width = cam_params_.mv_camera_config.pixelWidth;
+    mono_cam.height = cam_params_.mv_camera_config.pixelHeight;
+    mv_sequence_writer_ =  mvSRW_Writer_Initialize( log_root_folder_.c_str(), &mono_cam, NULL );
+    if( mv_sequence_writer_ == nullptr ) {
+      WARN_PRINT( "WARNING: Unable to initialize mvSRW_Writer object.  Logging is disabled" );
+      enable_logging_ = false;
     }
   }
 
@@ -231,6 +258,11 @@ int32_t Snapdragon::VislamManager::Imu_IEventListener_ProcessSamples( sensor_imu
           lin_acc[0], lin_acc[1], lin_acc[2]);
       mvVISLAM_AddGyro(vislam_ptr_, current_timestamp_ns,
           ang_vel[0], ang_vel[1], ang_vel[2]);
+
+      if( enable_logging_ && mv_sequence_writer_ != nullptr ) {
+        mvSRW_Writer_AddAccel( mv_sequence_writer_, current_timestamp_ns, lin_acc[0], lin_acc[1], lin_acc[2] );
+        mvSRW_Writer_AddGyro( mv_sequence_writer_, current_timestamp_ns, ang_vel[0], ang_vel[1], ang_vel[2] );
+      } 
     }
   }  
   return rc;
@@ -270,6 +302,9 @@ int32_t Snapdragon::VislamManager::GetPose( mvVISLAMPose& pose, int64_t& pose_fr
       pose = mvVISLAM_GetPose(vislam_ptr_);
       pose_frame_id = frame_id;
       timestamp_ns = static_cast<uint64_t>(modified_timestamp);
+      if( enable_logging_ && mv_sequence_writer_ != nullptr ) {
+        mvSRW_Writer_AddImage( mv_sequence_writer_, frame_ts_ns, image_buffer_ );
+      }
     }
   }
   return rc;
