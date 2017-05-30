@@ -103,5 +103,4 @@ private:
   ros::NodeHandle  nh_;
   ros::Publisher   pub_vislam_pose_;
   ros::Publisher   pub_vislam_odometry_;
-  Snapdragon::VislamManager vislam_manager_;
 };
