@@ -37,7 +37,7 @@ This example assumes that you are familiar with ROS framework.  If you are new t
 ### Summary of changes from previous release
 
 | Item | Previous release - mv0.8 | Current Release - mv0.9.1 | Future Release mv 1.0.2 |
-|----|----|----|
+|----|----|----|----|
 |MV_SDK environment variable| needed | Not needed.  The new mv installation puts the library files under /usr/lib | Not needed |
 |MV License file installation | needed.  Should be placed in the /opt/qualcomm/mv/lib/mv/bin/lin/8x74/ | needed should be placed at /usr/lib | needed should be placed at /opt/qcom-licenses/ |
 |MV link library Name| libmv.so | libmv1.so.  Update the respective make files to link against libmv1 instead of libmv.so | same as mv 0.9.1 |
