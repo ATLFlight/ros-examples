@@ -204,7 +204,7 @@ void Snapdragon::RosNode::Vislam::ThreadMain() {
 int32_t Snapdragon::RosNode::Vislam::PublishVislamData( mvVISLAMPose& vislamPose, int64_t vislamFrameId, uint64_t timestamp_ns  ) {
   geometry_msgs::PoseStamped pose_msg;
   ros::Time frame_time;
-  frame_time.sec = (int32_t)(timestamp_ns/100000000UL);
+  frame_time.sec = (int32_t)(timestamp_ns/1000000000UL);
   frame_time.nsec = (int32_t)(timestamp_ns % 1000000000UL);
   pose_msg.header.frame_id = "vislam";
   pose_msg.header.stamp = frame_time;

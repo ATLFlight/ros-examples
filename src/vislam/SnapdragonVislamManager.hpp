@@ -30,6 +30,7 @@
  *
  ****************************************************************************/
 #pragma once
+#include <atomic>
 #include "SnapdragonCameraTypes.hpp"
 #include "mvVISLAM.h"
 #include "SnapdragonCameraManager.hpp"
