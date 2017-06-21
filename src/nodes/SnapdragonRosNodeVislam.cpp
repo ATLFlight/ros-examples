@@ -153,12 +153,12 @@ void Snapdragon::RosNode::Vislam::ThreadMain() {
 
   //set the cpa configuration.
   mvCPA_Configuration cpaConfig;
-  cpaConfig.cpaType = 1;
-  cpaConfig.startExposure = param.camera_config.exposure;
-  cpaConfig.startGain = param.camera_config.gain;
-  cpaConfig.filterSize = 1;
-  cpaConfig.exposureCost = 1.0f;
-  cpaConfig.gainCost = 0.3333f;
+  cpaConfig.cpaType = MVCPA_MODE_COST;
+  cpaConfig.legacyCost.startExposure = param.camera_config.exposure;
+  cpaConfig.legacyCost.startGain = param.camera_config.gain;
+  cpaConfig.legacyCost.filterSize = 1;
+  cpaConfig.legacyCost.exposureCost = 1.0f;
+  cpaConfig.legacyCost.gainCost = 0.3333f;
 
   param.mv_cpa_config = cpaConfig;   
   Snapdragon::VislamManager vislam_man;

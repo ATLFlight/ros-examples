@@ -110,7 +110,7 @@ int32_t Snapdragon::VislamManager::Initialize
   if( rc == 0 ) {
     vislam_ptr_ = mvVISLAM_Initialize
     (
-      &(cam_params_.mv_camera_config),
+      &(cam_params_.mv_camera_config), 0,
       vislam_params_.tbc, vislam_params_.ombc, vislam_params_.delta,
       vislam_params_.std0Tbc, vislam_params_.std0Ombc, vislam_params_.std0Delta,
       vislam_params_.accelMeasRange, vislam_params_.gyroMeasRange,

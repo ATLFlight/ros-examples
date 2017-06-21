@@ -139,8 +139,8 @@ int32_t Snapdragon::CameraManager::Initialize(){
       }
     }
 
-    snap_camera_param_ptr_->mv_cpa_config.startExposure = camera_config_ptr_->exposure;
-    snap_camera_param_ptr_->mv_cpa_config.startGain = camera_config_ptr_->gain;
+    snap_camera_param_ptr_->mv_cpa_config.legacyCost.startExposure = camera_config_ptr_->exposure;
+    snap_camera_param_ptr_->mv_cpa_config.legacyCost.startGain = camera_config_ptr_->gain;
 
     if (snap_camera_param_ptr_->enable_cpa) {
       mvCPA_ptr_ = mvCPA_Initialize(&snap_camera_param_ptr_->mv_cpa_config);
