@@ -70,10 +70,6 @@ adb shell
 source /home/linaro/.bashrc
 ```
 
-#### Cross-Compile Build Environment
-
-Get the latest Snapdragon Flight<sup>TM</sup> qrlSDK for your Ubuntu 14.04 host computer by following the instructions [here](https://github.com/ATLFlight/ATLFlightDocs/blob/master/AppsGettingStarted.md)
-
 
 #### Install ROS on Snapdragon Platform.
 
