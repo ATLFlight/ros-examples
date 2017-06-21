@@ -2,9 +2,9 @@
 
 This repo provides the sample code and instructions to run Visual-Inertial Simultaneous Localization And Mapping (VISLAM) as a ROS node on the [Qualcomm Snapdragon Platform](https://developer.qualcomm.com/hardware/snapdragon-flight)<sup>TM</sup>.
 
-This example code is for MV SDK release [mv_0.9.1](https://developer.qualcomm.com/hardware/snapdragon-flight/tools).
+This example code is for MV SDK release [mv_1.0.2](https://developer.qualcomm.com/hardware/snapdragon-flight/tools).
 
-**NOTE**: The older release(mv0.8) instructions are [here](https://github.com/ATLFlight/ros-examples/tree/mv-release-0.8).  The mv0.8 release will deprecated after May. 4th 2017. 
+**NOTE**: The older release(mv0.9.1) instructions are [here](https://github.com/ATLFlight/ros-examples/tree/master). 
 
 This example assumes that you are familiar with ROS framework.  If you are new to ROS, refer to [ROS Start Guide](http://wiki.ros.org/ROS/StartGuide) first to get started.
 
@@ -36,11 +36,11 @@ This example assumes that you are familiar with ROS framework.  If you are new t
 
 ### Summary of changes from previous release
 
-| Item | Previous release - mv0.8 | Current Release - mv0.9.1 |
+| Item | Previous release - mv0.8 | Current Release - mv0.9.1 | Future Release mv 1.0.2 |
 |----|----|----|
-|MV_SDK environment variable| needed | Not needed.  The new mv installation puts the library files under /usr/lib |
-|MV License file installation | needed.  Should be placed in the /opt/qualcomm/mv/lib/mv/bin/lin/8x74/ | needed should be placed at /usr/lib |
-|MV link library Name| libmv.so | libmv1.so.  Update the respective make files to link against libmv1 instead of libmv.so |
+|MV_SDK environment variable| needed | Not needed.  The new mv installation puts the library files under /usr/lib | Not needed |
+|MV License file installation | needed.  Should be placed in the /opt/qualcomm/mv/lib/mv/bin/lin/8x74/ | needed should be placed at /usr/lib | needed should be placed at /opt/qcom-licenses/ |
+|MV link library Name| libmv.so | libmv1.so.  Update the respective make files to link against libmv1 instead of libmv.so | same as mv 0.9.1 |
 
 The current build process is supported only on-target (i.e. on the Snapdragon Flight<sup>TM</sup> Board).  Future release(s) will support off-target cross-compilation on a host computer.
 
@@ -52,7 +52,7 @@ The following is an overall workflow for installation, build and execution of th
 
 #### Platform BSP
 
-These instructions were tested with version **Flight_3.1.2**. The latest version of the software can be downloaded from [here](http://support.intrinsyc.com/projects/snapdragon-flight/files) and  installed by following the instructions found [here](http://support.intrinsyc.com/projects/snapdragon-flight/wiki)
+These instructions were tested with version **Flight_3.1.3**. The latest version of the software can be downloaded from [here](http://support.intrinsyc.com/projects/snapdragon-flight/files) and  installed by following the instructions found [here](http://support.intrinsyc.com/projects/snapdragon-flight/wiki)
 
 **NOTE**: By default the HOME environment variable is not set.  Set this up doing the following:
 
@@ -74,22 +74,6 @@ source /home/linaro/.bashrc
 
 Get the latest Snapdragon Flight<sup>TM</sup> qrlSDK for your Ubuntu 14.04 host computer by following the instructions [here](https://github.com/ATLFlight/ATLFlightDocs/blob/master/AppsGettingStarted.md)
 
-**NOTE**: For this example, you will need the qrlSDK to get the missing files on to the target (see below).
-
-
-  1. Platform build setup for camera headers
-
-    **NOTE**: For on-target camera development there are few header files missing on the target, but are part of the qrlSDK.  To fix this, the missing files need to be pushed on to the target.
-    This is an interim solution and will be addressed in future releases.
-
-    Push the following missing files to the target:
-
-```
-cd <sdk_root_install_path>/sysroots/eagle8074/usr/include
-adb push camera.h /usr/include
-adb push camera_parameters.h /usr/include
-adb shell sync
-```
 
 #### Install ROS on Snapdragon Platform.
 
@@ -99,7 +83,7 @@ Refer to the following [page](https://github.com/ATLFlight/ATLFlightDocs/blob/ma
 
 * Download the latest Snapdragon Machine Vision SDK from [here](https://developer.qualcomm.com/sdflight-tools)
 * The package name will be mv\<version\>.deb.  
-** Example: *mv0.9.1_8x74.deb*
+** Example: *mv1.0.2_8x74.deb*
 * push the deb package to the target and install it.
 
 ```
@@ -115,14 +99,16 @@ dpkg -i /home/linaro/mv<version>.deb
 
 The Machine Vision SDK will need a license file to run.  Obtain a research and development license file from [here](https://developer.qualcomm.com/sdflight-key-req)
 
-The license file needs to be placed at the same location as the MV SDK library **libmv1.so**.
+The license file needs to be placed in the following folder on target: /opt/qcom-licenses/
 
 Push the license file to the target using the following command:
 
 ```
-adb push snapdragon-flight-license.bin /usr/lib/
+adb push snapdragon-flight-license.bin /opt/qcom-licenses/
 adb shell sync
 ```
+
+*NOTE:* Make sure to create the folder /opt/qcom-licenses/ if it is not present on the target.
 
 ### Clone and build sample code
 
@@ -149,7 +135,7 @@ adb shell
 source /home/linaro/.bashrc
 roscd
 cd ../src
-git clone https://github.com/ATLFlight/ros-examples.git snap_ros_examples
+git clone -b mv-release-1.0.2 https://github.com/ATLFlight/ros-examples.git snap_ros_examples 
 ```
 
 * Build the code
