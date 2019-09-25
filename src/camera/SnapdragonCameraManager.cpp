@@ -219,10 +219,14 @@ int32_t Snapdragon::CameraManager::Stop() {
 
 void Snapdragon::CameraManager::UpdateGainAndExposure()
 {
-  mvCPA_AddFrame(mvCPA_ptr_, frame_queue_[frame_q_write_index_].second->data,
-      camera_config_ptr_->pixel_width,
-      camera_config_ptr_->pixel_height,
-      camera_config_ptr_->memory_stride);
+#ifdef MV_VERSION_091  // use for MV v0.9.1
+  mvCPA_AddFrame( mvCPA_ptr_, frame_queue_[frame_q_write_index_].second->data,
+      camera_config_ptr_->pixel_width, camera_config_ptr_->pixel_height,
+      camera_config_ptr_->memory_stride );
+#else  // use for later versions of MV (e.g., v1.2.7)
+  mvCPA_AddFrame( mvCPA_ptr_, frame_queue_[frame_q_write_index_].second->data,
+                  camera_config_ptr_->memory_stride );
+#endif
 
   float cpa_exposure, cpa_gain;
   mvCPA_GetValues(mvCPA_ptr_, &cpa_exposure, &cpa_gain);

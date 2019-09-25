@@ -37,6 +37,7 @@ extern "C"{
 
 #define HEADER_SIZE 48
 #define DEBUG_PRINT_BUFFER_SIZE (1024 - HEADER_SIZE)
+#define MV_VERSION_091  // use for MV v0.9.1
 
 typedef enum
 {

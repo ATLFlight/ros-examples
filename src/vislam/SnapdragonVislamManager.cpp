@@ -46,7 +46,7 @@ Snapdragon::VislamManager::~VislamManager() {
 }
 
 int32_t Snapdragon::VislamManager::CleanUp() {
-  // stop the imu api first.
+  // stop the IMu API first.
   if( imu_man_ptr_ != nullptr ) {
     imu_man_ptr_->RemoveHandler( this );
     imu_man_ptr_->Terminate();
@@ -63,7 +63,7 @@ int32_t Snapdragon::VislamManager::CleanUp() {
     cam_man_ptr_ = nullptr;
   }
 
-  //stop the vislam engine.
+  //stop the VISLAM engine.
   if( vislam_ptr_ != nullptr ) {
     mvVISLAM_Deinitialize( vislam_ptr_ );
     vislam_ptr_ = nullptr;
@@ -77,11 +77,12 @@ int32_t Snapdragon::VislamManager::CleanUp() {
   return 0;  
 }
 
-int32_t Snapdragon::VislamManager::Initialize
-( 
+
+
+int32_t Snapdragon::VislamManager::Initialize( 
   const Snapdragon::CameraParameters& cam_params,
-  const Snapdragon::VislamManager::InitParams& vislam_params
-) {
+  const Snapdragon::VislamManager::InitParams& vislam_params )
+{
   cam_params_ = cam_params;
   vislam_params_ = vislam_params;
   int32_t rc = 0;
@@ -95,7 +96,7 @@ int32_t Snapdragon::VislamManager::Initialize
     }
   }
 
-  if( rc == 0 ) { //initialize the Imu Manager.
+  if( rc == 0 ) { //initialize the IMU Manager.
     imu_man_ptr_ = new Snapdragon::ImuManager();
     if( imu_man_ptr_ != nullptr ) {
       rc = imu_man_ptr_->Initialize();
@@ -106,10 +107,10 @@ int32_t Snapdragon::VislamManager::Initialize
     }
   }
 
-  //now intialize the VISLAM module.
+  // now initialize the VISLAM module.
   if( rc == 0 ) {
-    vislam_ptr_ = mvVISLAM_Initialize
-    (
+#ifdef MV_VERSION_091  // use for MV v0.9.1
+      vislam_ptr_ = mvVISLAM_Initialize(
       &(cam_params_.mv_camera_config),
       vislam_params_.tbc, vislam_params_.ombc, vislam_params_.delta,
       vislam_params_.std0Tbc, vislam_params_.std0Ombc, vislam_params_.std0Delta,
@@ -118,15 +119,33 @@ int32_t Snapdragon::VislamManager::Initialize
       vislam_params_.stdCamNoise, vislam_params_.minStdPixelNoise, vislam_params_.failHighPixelNoisePoints,
       vislam_params_.logDepthBootstrap, vislam_params_.useLogCameraHeight, vislam_params_.logCameraHeightBootstrap,
       vislam_params_.noInitWhenMoving,
-      vislam_params_.limitedIMUbWtrigger
-    );
-    if( vislam_ptr_ == nullptr ) {
+      vislam_params_.limitedIMUbWtrigger );
+#else  // use for later versions of MV (e.g., v1.2.7)
+      float32_t readoutTime = 0;  // 0 for global shutter
+      float32_t failHighPixelNoiseScaleFactor = 1.6651f;
+      float32_t gpsImuTimeAlignment = 0.0f;
+      float32_t tba[3];
+      tba[0] = tba[1] = tba[2] = 0.f;
+      bool mapping = true;  // experimental feature and computationally heavy so turn off if poor performance
+
+      vislam_ptr_ = mvVISLAM_Initialize( &(cam_params_.mv_camera_config) readoutTime,
+          vislam_params_.tbc, vislam_params_.ombc, vislam_params_.delta, 
+          vislam_params_.std0Tbc, vislam_params_.std0Ombc, 
+          vislam_params_.std0Delta, vislam_params_.accelMeasRange,
+          vislam_params_.gyroMeasRange, vislam_params_.stdAccelMeasNoise, 
+          vislam_params_.stdGyroMeasNoise, vislam_params_.stdCamNoise,
+          vislam_params_.minStdPixelNoise, failHighPixelNoiseScaleFactor,
+          vislam_params_.logDepthBootstrap, vislam_params_.useLogCameraHeight, 
+          vislam_params_.logCameraHeightBootstrap, vislam_params_.noInitWhenMoving,
+          vislam_params_.limitedIMUbWtrigger, nullptr, gpsImuTimeAlignment, tba, mapping );
+#endif
+      if( vislam_ptr_ == nullptr ) {
       rc = -1;
     }
   }
 
   if( rc != 0 ) {
-    ERROR_PRINT( "Error initializing the Vislam Manager." );
+    ERROR_PRINT( "Error initializing the VISLAM Manager." );
     CleanUp();
   }
   else {
@@ -152,7 +171,7 @@ int32_t Snapdragon::VislamManager::Start() {
     image_buffer_ = new uint8_t[ image_buffer_size_bytes_ ];
   }
   else {
-    ERROR_PRINT( "Calling Start without calling intialize" );
+    ERROR_PRINT( "Calling Start without calling initialize" );
     rc = -1;
   }
   return rc;
