@@ -120,7 +120,7 @@ int32_t Snapdragon::VislamManager::Initialize(
       vislam_params_.logDepthBootstrap, vislam_params_.useLogCameraHeight, vislam_params_.logCameraHeightBootstrap,
       vislam_params_.noInitWhenMoving,
       vislam_params_.limitedIMUbWtrigger );
-#else  // use for later versions of MV (e.g., v1.2.7)
+#else  // use for MV v1.2.7
       float32_t readoutTime = 0;  // 0 for global shutter
       float32_t failHighPixelNoiseScaleFactor = 1.6651f;
       float32_t gpsImuTimeAlignment = 0.0f;

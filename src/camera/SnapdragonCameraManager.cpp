@@ -141,6 +141,12 @@ int32_t Snapdragon::CameraManager::Initialize(){
 
     snap_camera_param_ptr_->mv_cpa_config.startExposure = camera_config_ptr_->exposure;
     snap_camera_param_ptr_->mv_cpa_config.startGain = camera_config_ptr_->gain;
+#ifndef MV_VERSION_091  // use for MV v1.2.7
+    snap_camera_param_ptr_->mv_cpa_config.width = camera_config_ptr_->pixel_width;
+    snap_camera_param_ptr_->mv_cpa_config.height = camera_config_ptr_->pixel_height;
+    snap_camera_param_ptr_->mv_cpa_config.format = MVCPA_FORMAT_GRAY8;
+    snap_camera_param_ptr_->mv_cpa_config.cpaType = MVCPA_MODE_COST;
+#endif
 
     if (snap_camera_param_ptr_->enable_cpa) {
       mvCPA_ptr_ = mvCPA_Initialize(&snap_camera_param_ptr_->mv_cpa_config);
@@ -223,7 +229,7 @@ void Snapdragon::CameraManager::UpdateGainAndExposure()
   mvCPA_AddFrame( mvCPA_ptr_, frame_queue_[frame_q_write_index_].second->data,
       camera_config_ptr_->pixel_width, camera_config_ptr_->pixel_height,
       camera_config_ptr_->memory_stride );
-#else  // use for later versions of MV (e.g., v1.2.7)
+#else  // use for MV v1.2.7
   mvCPA_AddFrame( mvCPA_ptr_, frame_queue_[frame_q_write_index_].second->data,
                   camera_config_ptr_->memory_stride );
 #endif
